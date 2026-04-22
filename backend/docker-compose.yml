@@ -1,26 +1,4 @@
-version: '3.8'
-
 services:
-  # MongoDB Service
-  mongodb:
-    image: mongo:7.0-alpine
-    container_name: openpoll-mongodb
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_DATABASE: openpoll
-    volumes:
-      - mongodb_data:/data/db
-      - mongodb_config:/data/configdb
-    networks:
-      - openpoll-network
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
   # Backend Service
   backend:
     build:
@@ -29,27 +7,18 @@ services:
     container_name: openpoll-backend
     ports:
       - "5000:5000"
+    env_file:
+      - .env
     environment:
-      NODE_ENV: development
-      PORT: 5000
-      MONGODB_URI: mongodb://mongodb:27017/openpoll
-      JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key_change_this_in_production_12345}
-      JWT_EXPIRE: 7d
-      CLIENT_URL: http://localhost:3000
-    depends_on:
-      mongodb:
-        condition: service_healthy
+      - NODE_ENV=development
     volumes:
       - .:/app
       - /app/node_modules
     networks:
       - openpoll-network
     restart: unless-stopped
-    command: npm run dev
-
-volumes:
-  mongodb_data:
-  mongodb_config:
+    user: root
+    command: sh -c "npm install && node node_modules/nodemon/bin/nodemon.js -L src/server.js"
 
 networks:
   openpoll-network:

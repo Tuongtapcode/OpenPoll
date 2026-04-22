@@ -1,0 +1,17 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openpoll-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true # Giúp Hot Reload hoạt động ổn định trên một số hệ điều hành
+    stdin_open: true
+    tty: true
