@@ -13,5 +13,6 @@ services:
     environment:
       - NODE_ENV=development
       - WATCHPACK_POLLING=true # Giúp Hot Reload hoạt động ổn định trên một số hệ điều hành
+      
     stdin_open: true
     tty: true
